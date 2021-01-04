@@ -7,7 +7,7 @@ pragma solidity 0.6.11;
 // A contract is a collection of functions and data (its state).
 // Once deployed, a contract resides at a specific address on the Ethereum blockchain.
 // Learn more: https://solidity.readthedocs.io/en/v0.5.10/structure-of-a-contract.html
-contract HelloWorld2 {
+contract HelloWorld {
 
     // Declares a state variable `message` of type `string`.
     // State variables are variables whose values are permanently stored in contract storage.
