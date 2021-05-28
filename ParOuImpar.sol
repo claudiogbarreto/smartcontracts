@@ -89,7 +89,7 @@ contract ParOuImpar{
 
     }
     
-    function defineNumeroJogador2(uint _numero, string memory _escolha) public {
+    function defineNumeroEscolhaJogador2(uint _numero, string memory _escolha) public {
           require(msg.sender == jogador2, "Apenas o jogador 2 pode escolher o seu numero");
           require(!jogador2Escolheu, "O jogador 2 ja fez sua escolha");
           require(compararStrings(_escolha, "par") || compararStrings(_escolha, "impar"), "So pode escolher par ou impar");
