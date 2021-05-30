@@ -16,7 +16,7 @@ contract ParOuImpar{
     
      uint public numeroJogador1; // quantidade de dedos abertos na mão do jogador 1
     
-     uint public numeroJogador2; // quantidade de dedos abertos na mão do jogador 1
+     uint public numeroJogador2; // quantidade de dedos abertos na mão do jogador 2
      
     string public escolhaJogador1; // par ou impar
     
