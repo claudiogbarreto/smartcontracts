@@ -22,9 +22,9 @@ contract ParOuImpar{
     
     string public escolhaJogador2;  // par ou impar
     
-    bytes32 public hashJogador1; // par ou impar
+    bytes32 public hashJogador1; // hash keccak256 do número escolhido e da senha
     
-    bytes32 public hashJogador2;  // par ou impar
+    bytes32 public hashJogador2;  // hash keccak256 do número escolhido e da senha
     
     address public owner; // o dono do SC (quem fez o deploy), que tem o poder de reinicializar, de modo que novos jogadores possam jogar
     
