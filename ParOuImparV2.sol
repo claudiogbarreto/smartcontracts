@@ -16,15 +16,15 @@ contract ParOuImpar{
     
      uint public numeroJogador1; // quantidade de dedos abertos na mão do jogador 1
     
-     uint public numeroJogador2; // quantidade de dedos abertos na mão do jogador 2
+     uint public numeroJogador2; // quantidade de dedos abertos na mão do jogador 1
      
     string public escolhaJogador1; // par ou impar
     
     string public escolhaJogador2;  // par ou impar
     
-    bytes32 public hashJogador1; // hash keccak256 do número escolhido e da senha
+    bytes32 public hashJogador1; // par ou impar
     
-    bytes32 public hashJogador2;  // hash keccak256 do número escolhido e da senha
+    bytes32 public hashJogador2;  // par ou impar
     
     address public owner; // o dono do SC (quem fez o deploy), que tem o poder de reinicializar, de modo que novos jogadores possam jogar
     
@@ -50,6 +50,8 @@ contract ParOuImpar{
     
     string public vencedor; // Indica qual foi o jogador vencedor, a partir da sua escolha e da variável resultado
     
+    bool public jogoEncerrado;
+    
     
     constructor(address _jogador1, address _jogador2){
         owner = msg.sender;
@@ -69,6 +71,8 @@ contract ParOuImpar{
         
         jogador1Desclassificado = false;
         jogador2Desclassificado = false;
+        
+        jogoEncerrado = false;
         
         hashJogador1 = "";
         hashJogador1 = "";
@@ -99,7 +103,10 @@ contract ParOuImpar{
   
     
     function reinicializaParOuImpar(address _jogador1, address _jogador2) public {
-            require(msg.sender == owner, "Apenas o proprietario do contrato pode reinicializar");
+            // require(msg.sender == owner, "Apenas o proprietario do contrato pode reinicializar");
+            require(jogoEncerrado, "Somente eh possivel reinicializar apos o encerramento do jogo");
+            
+            
             jogador1 = _jogador1;
             jogador2 = _jogador2;
             
@@ -116,6 +123,8 @@ contract ParOuImpar{
             
             jogador1Desclassificado = false;
             jogador2Desclassificado = false;
+            
+            jogoEncerrado = false;
             
             hashJogador1 = "";
             hashJogador1 = "";
@@ -160,6 +169,7 @@ contract ParOuImpar{
           require(msg.sender == jogador1, "Apenas o jogador 1 pode revelar o seu numero");
           require(jogador1Escolheu, "O jogador 1 so pode revelar o seu numero apos fazer sua escolha");
           require(jogador2Escolheu, "O jogador 1 so pode revelar o seu numero apos o jogador 2 fazer sua escolha");
+          require(!jogador1Revelou, "O jogador 1 ja revelou sua jogada");
           require(!jogador1Desclassificado, "O jogador 1 so pode revelar o seu numero se nao tiver sido desclassificado");
 
            jogador1Revelou = true;
@@ -190,6 +200,7 @@ contract ParOuImpar{
           require(msg.sender == jogador2, "Apenas o jogador 2 pode revelar o seu numero");
           require(jogador2Escolheu, "O jogador 2 so pode revelar o seu numero apos fazer sua escolha");
           require(jogador1Escolheu, "O jogador 2 so pode revelar o seu numero apos o jogador 1 fazer sua escolha");
+          require(!jogador2Revelou, "O jogador 2 ja revelou sua jogada");
           require(!jogador2Desclassificado, "O jogador 2 so pode revelar o seu numero se nao tiver sido desclassificado");
  
           jogador2Revelou = true;
@@ -221,8 +232,12 @@ contract ParOuImpar{
           require(msg.sender == jogador1 || msg.sender == jogador2, "Apenas os jogadores podem saber o resultado");
           require(jogador1Escolheu && jogador2Escolheu, "Os jogadores ainda nao escolheram seus numeros");
           require(jogador1Revelou && jogador2Revelou, "Os jogadores ainda nao revelaram seus numeros");
+          require(!jogoEncerrado, "O jogo ja se encerrou");
+          
           
           string memory _resultado;
+          
+          jogoEncerrado = true;
           
           if (jogador1Desclassificado && jogador1Desclassificado){
               
