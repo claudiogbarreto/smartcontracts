@@ -9,8 +9,7 @@ pragma solidity 0.8.4;
 // quando os dois jogadores tiverem jogado, é liberada a função revela jogada
 // ela recebe o número escolhido e a senha e faz o hash, comparando com o hash armazenado - se erro, jogador desclassificado
 // se correto, armazena o número e a senha e segue como antes
-// terceira versão: armazenamento das partidas passadas, eventos (integração melhor com DAPP) e pagamento de tarifas ao owner
-// também previsto que os jogadores apostem
+// terceira versão: armazenamento das partidas passadas, eventos (integração melhor com DAPP) e pagamento de tarifa ao owner
 
 contract ParOuImpar{
     
@@ -56,15 +55,15 @@ contract ParOuImpar{
     }
     
     
-    constructor(address _jogador1, address _jogador2){
+    constructor(){
         
         owner = msg.sender;
         ownerPayable = payable(owner);
         reinicializaDevidoOwner = 1 wei;
         percentualDevidoOwner = 10;
         
-        jogador1.endereco = _jogador1;
-        jogador1.enderecoPayable = payable(_jogador1);
+        jogador1.endereco = address(0);
+        jogador1.enderecoPayable = payable(jogador1.endereco);
         jogador1.numero = 0;
         jogador1.escolha = "";
         jogador1.hash = "";
@@ -72,8 +71,8 @@ contract ParOuImpar{
         jogador1.revelou = false;
         jogador1.desclassificado = false;
         
-        jogador2.endereco = _jogador2;
-        jogador2.enderecoPayable = payable(_jogador2);
+        jogador2.endereco = address(0);
+        jogador2.enderecoPayable = payable(jogador2.endereco);
         jogador2.numero = 0;
         jogador2.escolha = "";
         jogador2.hash = "";
@@ -230,7 +229,7 @@ contract ParOuImpar{
     // "Apenas o jogador 1 pode revelar o seu numero" - AOJ1PROSN
     // "O jogador 1 so pode revelar o seu numero apos fazer sua escolha" - OJ1SPROSNAFSE
     // O jogador 1 so pode revelar o seu numero apos o jogador 2 fazer sua escolha - OJ1SPROSNAOJ2FSE
-    // O jogador 1 ja revelou sua jogada - OJ2JRSJ
+    // O jogador 1 ja revelou sua jogada - OJ1JRSJ
     // O jogador 1 so pode revelar o seu numero se nao tiver sido desclassificado - OJ1SPROSNSNTSD
     // O jogador 1 foi desclassificado porque escolheu fora da faixa - 00 a 10 - OJ1FDPEFDF
     // O jogador 1 foi desclassificado porque o hash informado no inicio nao bate com o hash calculado - OJ1FDPOHCNINBCOHC
@@ -240,7 +239,7 @@ contract ParOuImpar{
           require(msg.sender == jogador1.endereco, "AOJ1PROSN");
           require(jogador1.escolheu, "OJ1SPROSNAFSE");
           require(jogador2.escolheu, "OJ1SPROSNAOJ2FSE");
-          require(!jogador1.revelou, "OJ2JRSJ");
+          require(!jogador1.revelou, "OJ1JRSJ");
           require(!jogador1.desclassificado, "OJ1SPROSNSNTSD");
 
           jogador1.revelou = true;
