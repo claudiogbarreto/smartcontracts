@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Par ou ímpar</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+        type="application/javascript"></script>
+
+    <script src="https://kit.fontawesome.com/01a75fc869.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+     <script>
+         var mtimeOut;
+        function sucesso(resultado){
+            clearTimeout(mtimeOut);
+            fmensagem.value=resultado;
+             mtimeOut=window.setTimeout(function () {fmensagem.value=""}, 5000);
+        }
+
+        function insucesso(erro){
+            clearTimeout(mtimeOut);
+            fmensagem.value=erro;
+            mtimeOut=window.setTimeout(function() {fmensagem.value=""}, 5000);
+        }
+
+        function ConectarMetaMask(){
+            window.ethereum.enable()
+            .then(resultado => sucesso("Conectado à carteira - " +resultado))
+            .catch(erro => insucesso(erro));
+        }
+
+        function ConsultarRede() {
+            let provider = new ethers.providers.Web3Provider(window.ethereum);
+            provider.getNetwork()
+            .then(resultado => sucesso("A rede ativa na carteira é "+ resultado.name))
+            .catch(erro => insucesso(erro));
+        }    
+
+        /* function ConsultarEndereco() {
+            let meuEndereco = window.ethereum?.selectedAddress;
+            if (meuEndereco){
+                sucesso("O endereço selecionado na carteira é " +meuEndereco);
+            }
+            else{
+                insucesso("Não foi possível consultar o endereço");
+            }
+        } */
+
+        function calcularHash1() {
+            let frase = fnumeroJogador1.value + fsenhajogador1.value;
+            let output = ethers.utils.id(frase);
+            fhashjogador1.value=output;
+            return output;
+        }
+
+        function calcularHash2() {
+            let frase = fnumeroJogador2.value + fsenhajogador2.value;
+            let output = ethers.utils.id(frase);
+            fhashjogador2.value=output;
+            return output;
+        }
+
+        function checarRede(){
+            let mnomeredecarteira;
+            let mprovider = new ethers.providers.Web3Provider(window.ethereum);
+            mprovider.getNetwork()
+            .then((resultado) => {mnomeredecarteira = resultado["name"];
+                                  console.log(mnomeredecarteira);
+                                  if (mnomeredecarteira.toUpperCase() != fredecontrato.value.toUpperCase()){
+                                        insucesso("A rede da carteira não coincide com a rede do smart contract");
+                                   }
+                                   else{
+                                       sucesso("");
+                                   }
+                                 } 
+                 );
+            
+            
+        }
+
+        function Jogar1(){
+
+            let mEndereco = fscparouimpar.value;
+            let mABI = `[ 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"name": "reinicializaParOuImpar", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": false, 				"internalType": "string", 				"name": "_msg", 				"type": "string" 			} 		], 		"name": "mensagem", 		"type": "event" 	}, 	{ 		"inputs": [], 		"name": "resultadoParOuImpar", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "_vencedor", 				"type": "string" 			} 		], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "string", 				"name": "_a", 				"type": "string" 			}, 			{ 				"internalType": "string", 				"name": "_b", 				"type": "string" 			} 		], 		"name": "compararStrings", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "iguais", 				"type": "bool" 			} 		], 		"stateMutability": "pure", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador1", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador2", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador1", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador2", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogoEncerrado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador1", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador2", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "resultado", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "vencedor", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	} ]`;
+            let mnumeroJogador1 = parseInt(fnumeroJogador1.value);
+
+            if (mnumeroJogador1< 0 || mnumeroJogador1>99){
+                insucesso("Não realizada a jogada do jogador 1 - número escolhido deve estar entre 0 e 99");
+                return;
+            }
+
+            let mescolhaJogador1 = fescolhaJogador1.value;
+            let msenhaJogador1 = fsenhajogador1.value;
+            let mhashJogador1 = fhashjogador1.value;
+
+            let mProvider = new ethers.providers.Web3Provider(window.ethereum);
+            let mSigner = mProvider.getSigner();
+            let mContrato = new ethers.Contract(mEndereco, mABI, mProvider);
+            let mContratoComSigner = mContrato.connect(mSigner);
+           
+            /* mContratoComSigner.defineNumeroEscolhaJogador1(mhashJogador1, mescolhaJogador1)
+            .then(r => sucesso("Realizada com sucesso a jogada do jogador 1"))
+            .catch(e => insucesso("Não realizada a jogada do jogador 1: " + (e.error?.message || e.data?.message))); */
+            mContratoComSigner.defineNumeroEscolhaJogador1(mhashJogador1, mescolhaJogador1)
+            .then(r => sucesso("Realizada com sucesso a jogada do jogador 1"))
+            .catch(e => insucesso("Não realizada a jogada do jogador 1: " + (e.error.message))); 
+        };
+
+        function Jogar2(){
+
+            let mEndereco = fscparouimpar.value;
+            let mABI = `[ 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"name": "reinicializaParOuImpar", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": false, 				"internalType": "string", 				"name": "_msg", 				"type": "string" 			} 		], 		"name": "mensagem", 		"type": "event" 	}, 	{ 		"inputs": [], 		"name": "resultadoParOuImpar", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "_vencedor", 				"type": "string" 			} 		], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "string", 				"name": "_a", 				"type": "string" 			}, 			{ 				"internalType": "string", 				"name": "_b", 				"type": "string" 			} 		], 		"name": "compararStrings", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "iguais", 				"type": "bool" 			} 		], 		"stateMutability": "pure", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador1", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador2", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador1", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador2", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogoEncerrado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador1", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador2", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "resultado", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "vencedor", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	} ]`;
+            let mnumeroJogador2 = parseInt(fnumeroJogador2.value);
+
+            if (mnumeroJogador2< 0 || mnumeroJogador2>99){
+                insucesso("Não realizada a jogada do jogador 2 - número escolhido deve estar entre 0 e 99");
+                return;
+            }
+
+            let mescolhaJogador2 = fescolhaJogador2.value;
+            let msenhaJogador2 = fsenhajogador2.value;
+            let mhashJogador2 = fhashjogador2.value;
+
+            let mProvider = new ethers.providers.Web3Provider(window.ethereum);
+            let mSigner = mProvider.getSigner();
+            let mContrato = new ethers.Contract(mEndereco, mABI, mProvider);
+            let mContratoComSigner = mContrato.connect(mSigner);
+
+            /* mContratoComSigner.defineNumeroEscolhaJogador2(mhashJogador2, mescolhaJogador2)
+            .then(r => sucesso("Realizada com sucesso a jogada do jogador 2"))
+            .catch(e => insucesso("Não realizada a jogada do jogador 2: " + (e.error?.message || e.data?.message))); */
+            
+            mContratoComSigner.defineNumeroEscolhaJogador2(mhashJogador2, mescolhaJogador2)
+            .then(r => sucesso("Realizada com sucesso a jogada do jogador 2"))
+            .catch(e => insucesso("Não realizada a jogada do jogador 2: " + (e.error.message)));
+
+            };
+
+        function Revelar1() {
+
+            let mEndereco = fscparouimpar.value;
+            let mABI = `[ 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"name": "reinicializaParOuImpar", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": false, 				"internalType": "string", 				"name": "_msg", 				"type": "string" 			} 		], 		"name": "mensagem", 		"type": "event" 	}, 	{ 		"inputs": [], 		"name": "resultadoParOuImpar", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "_vencedor", 				"type": "string" 			} 		], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "string", 				"name": "_a", 				"type": "string" 			}, 			{ 				"internalType": "string", 				"name": "_b", 				"type": "string" 			} 		], 		"name": "compararStrings", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "iguais", 				"type": "bool" 			} 		], 		"stateMutability": "pure", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador1", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador2", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador1", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador2", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogoEncerrado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador1", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador2", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "resultado", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "vencedor", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	} ]`;
+            
+            let mnumeroJogador1 = parseInt(fnumeroJogador1.value);
+
+            if (mnumeroJogador1< 0 || mnumeroJogador1>99){
+                insucesso("Não revelada a jogada do jogador 1 - número escolhido deve estar entre 0 e 99");
+                return;
+            }
+
+            let msenhaJogador1 = fsenhajogador1.value;
+           
+            let mProvider = new ethers.providers.Web3Provider(window.ethereum);
+            let mSigner = mProvider.getSigner();
+            let mContrato = new ethers.Contract(mEndereco, mABI, mProvider);
+            let mContratoComSigner = mContrato.connect(mSigner);
+
+           /* mContratoComSigner.revelaNumeroEscolhaJogador1(mnumeroJogador1, msenhaJogador1)
+            .then(r => sucesso("Revelada com sucesso a jogada do jogador 1"))
+            .catch(e => insucesso("Não revelada a jogada do jogador 1: " + (e.error?.message || e.data?.message))); */
+            
+            mContratoComSigner.revelaNumeroEscolhaJogador1(mnumeroJogador1, msenhaJogador1)
+            .then(r => sucesso("Revelada com sucesso a jogada do jogador 1"))
+            .catch(e => insucesso("Não revelada a jogada do jogador 1: " + (e.error.message)));
+        };
+
+        function Revelar2() {
+
+            let mEndereco = fscparouimpar.value;
+            let mABI = `[ 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"name": "reinicializaParOuImpar", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": false, 				"internalType": "string", 				"name": "_msg", 				"type": "string" 			} 		], 		"name": "mensagem", 		"type": "event" 	}, 	{ 		"inputs": [], 		"name": "resultadoParOuImpar", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "_vencedor", 				"type": "string" 			} 		], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "string", 				"name": "_a", 				"type": "string" 			}, 			{ 				"internalType": "string", 				"name": "_b", 				"type": "string" 			} 		], 		"name": "compararStrings", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "iguais", 				"type": "bool" 			} 		], 		"stateMutability": "pure", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador1", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador2", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador1", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador2", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogoEncerrado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador1", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador2", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "resultado", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "vencedor", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	} ]`;
+
+            let mnumeroJogador2 = parseInt(fnumeroJogador2.value)
+
+            if (mnumeroJogador2< 0 || mnumeroJogador2>99){
+                insucesso("Não revelada a jogada do jogador 2 - número escolhido deve estar entre 0 e 99");
+                return;
+            }
+
+            let msenhaJogador2 = fsenhajogador2.value;
+
+            let mProvider = new ethers.providers.Web3Provider(window.ethereum);
+            let mSigner = mProvider.getSigner();
+            let mContrato = new ethers.Contract(mEndereco, mABI, mProvider);
+            let mContratoComSigner = mContrato.connect(mSigner);
+
+         /*   mContratoComSigner.revelaNumeroEscolhaJogador2(mnumeroJogador2, msenhaJogador2)
+            .then(r => sucesso("Revelada com sucesso a jogada do jogador 2"))
+            .catch(e => insucesso("Não revelada a jogada do jogador 2: " + (e.error?.message || e.data?.message))); */
+            mContratoComSigner.revelaNumeroEscolhaJogador2(mnumeroJogador2, msenhaJogador2)
+            .then(r => sucesso("Revelada com sucesso a jogada do jogador 2"))
+            .catch(e => insucesso("Não revelada a jogada do jogador 2: " + (e.error.message))); 
+        };
+
+        function Vencedor() {
+
+            let mEndereco = fscparouimpar.value;
+            let mABI = `[ 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"name": "reinicializaParOuImpar", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": false, 				"internalType": "string", 				"name": "_msg", 				"type": "string" 			} 		], 		"name": "mensagem", 		"type": "event" 	}, 	{ 		"inputs": [], 		"name": "resultadoParOuImpar", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "_vencedor", 				"type": "string" 			} 		], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "string", 				"name": "_a", 				"type": "string" 			}, 			{ 				"internalType": "string", 				"name": "_b", 				"type": "string" 			} 		], 		"name": "compararStrings", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "iguais", 				"type": "bool" 			} 		], 		"stateMutability": "pure", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador1", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador2", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador1", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador2", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogoEncerrado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador1", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador2", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "resultado", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "vencedor", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	} ]`;
+
+            let mProvider = new ethers.providers.Web3Provider(window.ethereum);
+            let mSigner = mProvider.getSigner();
+            let mContrato = new ethers.Contract(mEndereco, mABI, mProvider);
+            let mContratoComSigner = mContrato.connect(mSigner);
+
+            let mVencedor = "";
+ 
+          /*  mContratoComSigner.resultadoParOuImpar()
+            .then(r => sucesso("Apurado com sucesso o vencedor"))
+            .catch(e => insucesso("Não foi possível apurar o vencedor: " + (e.error?.message || e.data?.message))); */
+
+            mContratoComSigner.resultadoParOuImpar()
+            .then(r => sucesso("Apurado com sucesso o vencedor"))
+            .catch(e => insucesso("Não foi possível apurar o vencedor: " + (e.error.message)));
+
+        };
+
+        function consultaVencedor(){
+
+            let mEndereco = fscparouimpar.value;
+            let mABI = `[ 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"name": "reinicializaParOuImpar", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": false, 				"internalType": "string", 				"name": "_msg", 				"type": "string" 			} 		], 		"name": "mensagem", 		"type": "event" 	}, 	{ 		"inputs": [], 		"name": "resultadoParOuImpar", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "_vencedor", 				"type": "string" 			} 		], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "string", 				"name": "_a", 				"type": "string" 			}, 			{ 				"internalType": "string", 				"name": "_b", 				"type": "string" 			} 		], 		"name": "compararStrings", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "iguais", 				"type": "bool" 			} 		], 		"stateMutability": "pure", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador1", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador2", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador1", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador2", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogoEncerrado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador1", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador2", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "resultado", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "vencedor", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	} ]`;
+
+            let mProvider = new ethers.providers.Web3Provider(window.ethereum);
+            let mSigner = mProvider.getSigner();
+            let mContrato = new ethers.Contract(mEndereco, mABI, mProvider);
+            let mContratoComSigner = mContrato.connect(mSigner);
+            
+            let mVencedor = "";
+
+          /*  mContratoComSigner.vencedor()
+            .then(r => sucesso(r))
+            .catch(e => insucesso("Não foi possível consultar o vencedor: " + (e.error?.message || e.data?.message))); */
+            mContratoComSigner.vencedor()
+            .then(r => sucesso(r))
+            .catch(e => insucesso("Não foi possível consultar o vencedor: " + (e.error.message))); 
+        };
+        
+        function reinicializarJogo(){
+
+            let mEndereco = fscparouimpar.value;
+            let mABI = `[ 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "bytes32", 				"name": "_hash", 				"type": "bytes32" 			}, 			{ 				"internalType": "string", 				"name": "_escolha", 				"type": "string" 			} 		], 		"name": "defineNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"name": "reinicializaParOuImpar", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador1", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "address", 				"name": "_jogador1", 				"type": "address" 			}, 			{ 				"internalType": "address", 				"name": "_jogador2", 				"type": "address" 			} 		], 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": false, 				"internalType": "string", 				"name": "_msg", 				"type": "string" 			} 		], 		"name": "mensagem", 		"type": "event" 	}, 	{ 		"inputs": [], 		"name": "resultadoParOuImpar", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "_vencedor", 				"type": "string" 			} 		], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "uint256", 				"name": "_numero", 				"type": "uint256" 			}, 			{ 				"internalType": "string", 				"name": "_senha", 				"type": "string" 			} 		], 		"name": "revelaNumeroEscolhaJogador2", 		"outputs": [], 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [ 			{ 				"internalType": "string", 				"name": "_a", 				"type": "string" 			}, 			{ 				"internalType": "string", 				"name": "_b", 				"type": "string" 			} 		], 		"name": "compararStrings", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "iguais", 				"type": "bool" 			} 		], 		"stateMutability": "pure", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador1", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "escolhaJogador2", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador1", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "hashJogador2", 		"outputs": [ 			{ 				"internalType": "bytes32", 				"name": "", 				"type": "bytes32" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador1Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Desclassificado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Escolheu", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogador2Revelou", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "jogoEncerrado", 		"outputs": [ 			{ 				"internalType": "bool", 				"name": "", 				"type": "bool" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador1", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "numeroJogador2", 		"outputs": [ 			{ 				"internalType": "uint256", 				"name": "", 				"type": "uint256" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"internalType": "address", 				"name": "", 				"type": "address" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "resultado", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"inputs": [], 		"name": "vencedor", 		"outputs": [ 			{ 				"internalType": "string", 				"name": "", 				"type": "string" 			} 		], 		"stateMutability": "view", 		"type": "function" 	} ]`;
+
+            let mProvider = new ethers.providers.Web3Provider(window.ethereum);
+            let mSigner = mProvider.getSigner();
+            let mContrato = new ethers.Contract(mEndereco, mABI, mProvider);
+            let mContratoComSigner = mContrato.connect(mSigner);
+            let menderecojogador1 = fenderecojogador1.value;
+            let menderecojogador2 = fenderecojogador2.value;
+
+            let mVencedor = "";
+
+          /*  mContratoComSigner.reinicializaParOuImpar(menderecojogador1, menderecojogador2)
+            .then(r => sucesso("Jogo reinicializado com sucesso"))
+            .catch(e => insucesso("Não foi possível reinicializar o jogo: " + (e.error?.message || e.data?.message))); */
+            
+            mContratoComSigner.reinicializaParOuImpar(menderecojogador1, menderecojogador2)
+            .then(r => sucesso("Jogo reinicializado com sucesso"))
+            .catch(e => insucesso("Não foi possível reinicializar o jogo: " + (e.error.message)));
+
+        };
+
+        function atualizarRede(){
+
+            let mredecontrato=fredecontrato.value;
+            let mlink= "";
+
+           if (mredecontrato == "Rinkeby"){
+                fscparouimpar.value="0xD42702dbc90357cbC49126abC66630347E86CA50";
+                mlink="https://rinkeby.etherscan.io/address/"+fscparouimpar.value;
+           }
+
+
+            if (mredecontrato == "Moonbase"){
+                fscparouimpar.value="0x1BB1dFeF33fC3233e38A437504738105F7C17B3A";
+                mlink="https://moonbase-blockscout.testnet.moonbeam.network/address/"+fscparouimpar.value;
+            }
+
+            if (mredecontrato == "Ropsten"){
+                fscparouimpar.value="0x186Cb78bE31d3cAA9549a54D82d6E235fDA74562";
+                mlink="https://ropsten.etherscan.io/address/"+fscparouimpar.value;
+            }
+
+            flink.href = mlink;
+            checarRede();
+           
+        };
+
+        window.onload = () =>{
+            
+            atualizarRede();
+        }
+
+          
+     </script>
+
+
+
+</head>
+<body>
+    <h2><span class="icon-bar">
+        <button onclick="ConectarMetaMask()" title="Conectar à carteira">
+            <i class="fas fa-wallet"></i>
+        </button>
+        <button onclick="ConsultarRede()" title="Clique para saber qual a rede conectada">
+            <i class="fas fa-network-wired"></i>
+        </button>
+        <button onclick="ConsultarEndereco()" title="Clique para consultar o endereço selecionado na carteira">
+            <i class="fas fa-address-card"></i>
+        </button>
+        <button onclick="Jogar1()" title="Clique para efetuar a jogada como sendo o jogador 1">
+            <i class="far fa-hand-point-up"></i>
+        </button>
+        <button onclick="Jogar2()" title="Clique para efetuar a jogada como sendo o jogador 2">
+            <i class="fas fa-hand-point-down"></i>
+        </button>
+        <button onclick="Revelar1()" title="Clique para revelar a jogada como jogador 1">
+            <i class="far fa-eye"></i>
+        </button>
+        <button onclick="Revelar2()" title="Clique para revelar a jogada como jogador 2">
+            <i class="fas fa-eye"></i>
+        </button>
+        <button onclick="Vencedor()" title="Clique para apurar quem foi o vencedor">
+            <i class="fas fa-calculator"></i>
+        </button>
+        <button onclick="consultaVencedor()" title="Clique para consultar quem foi o vencedor">
+            <i class="fas fa-trophy"></i>
+        </button>
+        <button onclick="reinicializarJogo()" title="Clique para reinicializar o jogo">
+            <i class="fas fa-fast-backward"></i>
+        </button>
+        </span>
+        <span class="direita">
+            &emsp;&emsp;&emsp;&emsp;<a href="#" target="_blank" id="flink">Smart contract</a>: 
+            <input type="text"  id="fscparouimpar" size=47 disabled="yes"/> 
+            <select id="fredecontrato" onchange="atualizarRede()">
+                <option value="Moonbase">Moonbase</option>
+                <option value="Rinkeby">Rinkeby</option>
+                <option value="Ropsten">Ropsten</option>
+            </select>
+        </span>
+    </h2>
+    <br>
+    <center><h2 class="jogador">Jogador 1: <input type="text"  id="fenderecojogador1" size=47/></h2></center> 
+        <br>
+        
+        &emsp;Número: &nbsp;&nbsp;<input type="text"  id="fnumeroJogador1" size=3 onchange="calcularHash1()"/> 
+        &emsp;Escolha: <select id="fescolhaJogador1">
+        <option>par</option>
+        <option>impar</option>
+        </select> &emsp;Senha: <input type="text"  id="fsenhajogador1" size=20 onchange="calcularHash1()" />
+        &emsp; Hash: <input type="text"  id="fhashjogador1" size=67/>
+        
+        <br>
+        <br>
+        
+        <center><h2 class="jogador">Jogador 2: <input type="text"  id="fenderecojogador2" size=47/></h2></center> 
+
+        &emsp;Número: &nbsp;&nbsp;<input type="text"  id="fnumeroJogador2" size=3 onchange="calcularHash2()"/> 
+        &emsp;Escolha: <select id="fescolhaJogador2">
+        <option>par</option>
+        <option>impar</option>
+        </select> &emsp;Senha: <input type="text"  id="fsenhajogador2" size=20 onchange="calcularHash2()" />
+        &emsp; Hash: <input type="text"  id="fhashjogador2" size=67/>
+        
+        <br>
+        <br>
+        <br>
+        <h2 class="mensagem">
+        Mensagem : <textarea name="mensagem" id="fmensagem" cols="117" rows="1"></textarea>
+        </h2>
+        
+        
+        Obs.: É preciso aguardar a confirmação das transações pelo blockchain. Não esquecer de mudar a rede no Metamask. 
+</body>
+</html>
