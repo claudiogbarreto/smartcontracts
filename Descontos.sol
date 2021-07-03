@@ -1,6 +1,7 @@
 /*
 SPDX-License-Identifier: CC-BY-4.0
 (c) Desenvolvido por Claudio Girao Barreto
+Adaptado de exemplo apresentado pelo professor Jeff Prestes no curso de Smart Contracts da PUC/SP
 This work is licensed under a Creative Commons Attribution 4.0 International License.
 */
 
@@ -143,7 +144,7 @@ contract Descontos is IERC20, Mortal {
         myName = "Descontos";
         mySymbol = "DESC";
         decimals = 0;
-        bonusCliente = 0.0000000408 ether;
+        bonusCliente = 0.000000000000023810 ether;
         _mint(msg.sender, (1000000 * (10 ** decimals)));
     }
 
@@ -168,7 +169,7 @@ contract Descontos is IERC20, Mortal {
     }
 
     function transfer(address to, uint256 amount) public override  
-                            hasEnoughBalance(msg.sender, amount, "Nao ha saldo de tokens") 
+                            hasEnoughBalance(msg.sender, amount, "Nao ha saldo suficiente de tokens") 
                             tokenAmountValid(amount)
                             temSaldoParaDoacao("Nao ha saldo no contrato para realizar a doacao para o cliente" ) 
                             returns(bool) {
@@ -208,10 +209,7 @@ contract Descontos is IERC20, Mortal {
         }
         
 
-            
-        
-        
-        
+       
         emit Transfer(msg.sender, to, amount);
         return true;
     } 
@@ -291,7 +289,7 @@ contract Descontos is IERC20, Mortal {
     
     function definirValorDoacaoEth(uint256 _bonus) public onlyOwner("Apenas o proprietario pode definir o bonus que sera dado ao cliente") {
         
-        bonusCliente = _bonus;
+        bonusCliente = _bonus * 1 gwei;
     }
     
     function transferirDoacaoEth(address _cliente) public 
